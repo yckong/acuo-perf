@@ -43,8 +43,8 @@
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="PortfolioUpload ${__threadNum}" enabled="true">
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="load${__threadNum}.xlsx" elementType="HTTPFileArg">
-                <stringProp name="File.path">load${__threadNum}.xlsx</stringProp>
+              <elementProp name="170${__threadNum}.xlsx" elementType="HTTPFileArg">
+                <stringProp name="File.path">170${__threadNum}.xlsx</stringProp>
                 <stringProp name="File.paramname">portfolios[0]</stringProp>
                 <stringProp name="File.mimetype">application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</stringProp>
               </elementProp>
@@ -106,6 +106,13 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="capture portfolioid" enabled="true">
+            <stringProp name="JSONPostProcessor.referenceNames">portfolioid</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$..portfolioId</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers">-1</stringProp>
+            <boolProp name="JSONPostProcessor.compute_concat">true</boolProp>
+          </JSONPostProcessor>
+          <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Request Valuation ${__threadNum}" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
@@ -113,7 +120,7 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">${__FileToString(portfolioids.txt,,)}</stringProp>
+                <stringProp name="Argument.value">${__eval(${PortfolioID})}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -170,6 +177,26 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="script">//print(&quot;-------------------Test1-----------------------------&quot;);
+PID=&quot;{\&quot;ids\&quot;:[&quot;;
+var n = ${portfolioid_matchNr};
+for(i=1;i&lt;=n-1;i++){
+	num=&quot;${portfolioid_&quot;+i+&quot;}&quot;;
+	print(num);
+	PID=PID + &apos;&quot;&apos; + num + &apos;&quot;&apos; + &quot;,&quot;;
+
+}
+print(PID);
+PID=PID + &apos;&quot;&apos; + &quot;${portfolioid_&quot; + n + &quot;}&quot; + &apos;&quot;&apos; + &quot;]}&quot;;
+print(PID);
+vars.put(&quot;PortfolioID&quot;, String.valueOf(PID));
+//print(&quot;-------------------Test End-----------------------------&quot;);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Generate Margin Call ${__threadNum}" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
@@ -177,7 +204,7 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">${__FileToString(portfolioids.txt,,)}</stringProp>
+                <stringProp name="Argument.value">${__eval(${PortfolioID})}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -234,8 +261,28 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">//print(&quot;-------------------Test1-----------------------------&quot;);
+PID=&quot;{\&quot;ids\&quot;:[&quot;;
+var n = ${portfolioid_matchNr};
+for(i=1;i&lt;=n-1;i++){
+	num=&quot;${portfolioid_&quot;+i+&quot;}&quot;;
+	print(num);
+	PID=PID + &apos;&quot;&apos; + num + &apos;&quot;&apos; + &quot;,&quot;;
+
+}
+print(PID);
+PID=PID + &apos;&quot;&apos; + &quot;${portfolioid_&quot; + n + &quot;}&quot; + &apos;&quot;&apos; + &quot;]}&quot;;
+print(PID);
+vars.put(&quot;PortfolioID&quot;, String.valueOf(PID));
+//print(&quot;-------------------Test End-----------------------------&quot;);</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
           <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Capture MarginIDs" enabled="true">
-            <stringProp name="JSONPostProcessor.referenceNames">MarginID</stringProp>
+            <stringProp name="JSONPostProcessor.referenceNames">MarginIDs</stringProp>
             <stringProp name="JSONPostProcessor.jsonPathExprs">$..referenceIdentifier</stringProp>
             <stringProp name="JSONPostProcessor.match_numbers">-1</stringProp>
             <boolProp name="JSONPostProcessor.compute_concat">true</boolProp>
@@ -248,7 +295,7 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;marginCallIds&quot;:[&quot;${MarginID_1}&quot;,&quot;${MarginID_2}&quot;,&quot;${MarginID_3}&quot;,&quot;${MarginID_4}&quot;,&quot;${MarginID_5}&quot;]}</stringProp>
+                <stringProp name="Argument.value">${__eval(${MarginID})}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -268,6 +315,26 @@
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="script">
+MID=&quot;{\&quot;marginCallIds\&quot;:[&quot;;
+var n = ${MarginIDs_matchNr};
+for(i=1;i&lt;=n-1;i++){
+	num=&quot;${MarginIDs_&quot;+i+&quot;}&quot;;
+	print(num);
+	MID=MID + &apos;&quot;&apos; + num + &apos;&quot;&apos; + &quot;,&quot;;
+
+}
+print(MID);
+MID=MID + &apos;&quot;&apos; + &quot;${MarginIDs_&quot; + n + &quot;}&quot; + &apos;&quot;&apos; + &quot;]}&quot;;
+print(MID);
+vars.put(&quot;MarginID&quot;, String.valueOf(MID));
+</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
           <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
             <collectionProp name="HeaderManager.headers">
               <elementProp name="Referer" elementType="Header">
@@ -401,69 +468,90 @@
             <stringProp name="JSONPostProcessor.defaultValues">0</stringProp>
           </JSONPostProcessor>
           <hashTree/>
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="Capture direction" enabled="true">
+            <stringProp name="JSONPostProcessor.referenceNames">direction</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$.items..direction</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers">-1</stringProp>
+            <boolProp name="JSONPostProcessor.compute_concat">true</boolProp>
+          </JSONPostProcessor>
+          <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Dispute" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;msId&quot;:&quot;${Params_1}&quot;,&quot;disputedAmount&quot;:&quot;${__BeanShell(Math.abs(${CPVMAsset_1}+${CPIMAsset_1}-${ClientVMAsset_1}-${ClientIMAsset_1}))}&quot;,&quot;agreedAmount&quot;:&quot;${__BeanShell(${ClientVMAsset_1}+${ClientIMAsset_1})}&quot;,&quot;reasonCodes&quot;:[&quot;PD&quot;],&quot;comments&quot;:&quot;NET TOTAL IM GBP (${Params_1}); Current MTM Exposure GBP (2); Variation GBP (1); &quot;,&quot;mtm&quot;:&quot;20000&quot;,&quot;balance&quot;:&quot;20000&quot;}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain"></stringProp>
-          <stringProp name="HTTPSampler.port"></stringProp>
-          <stringProp name="HTTPSampler.protocol">https</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/proxy/recon/disputeStatement</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
+        <WhileController guiclass="WhileControllerGui" testclass="WhileController" testname="While Controller" enabled="true">
+          <stringProp name="WhileController.condition">${__javaScript((${counter} &lt; ${Params_matchNr}))}</stringProp>
+        </WhileController>
         <hashTree>
-          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
-            <collectionProp name="HeaderManager.headers">
-              <elementProp name="Referer" elementType="Header">
-                <stringProp name="Header.name">Referer</stringProp>
-                <stringProp name="Header.value">https://uat.acuo.com/</stringProp>
-              </elementProp>
-              <elementProp name="Accept-Language" elementType="Header">
-                <stringProp name="Header.name">Accept-Language</stringProp>
-                <stringProp name="Header.value">en-US,en;q=0.5</stringProp>
-              </elementProp>
-              <elementProp name="origin" elementType="Header">
-                <stringProp name="Header.name">origin</stringProp>
-                <stringProp name="Header.value">https://uat.acuo.com</stringProp>
-              </elementProp>
-              <elementProp name="content-type" elementType="Header">
-                <stringProp name="Header.name">content-type</stringProp>
-                <stringProp name="Header.value">application/json</stringProp>
-              </elementProp>
-              <elementProp name="DNT" elementType="Header">
-                <stringProp name="Header.name">DNT</stringProp>
-                <stringProp name="Header.value">1</stringProp>
-              </elementProp>
-              <elementProp name="Accept-Encoding" elementType="Header">
-                <stringProp name="Header.name">Accept-Encoding</stringProp>
-                <stringProp name="Header.value">gzip, deflate, br</stringProp>
-              </elementProp>
-              <elementProp name="User-Agent" elementType="Header">
-                <stringProp name="Header.name">User-Agent</stringProp>
-                <stringProp name="Header.value">Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0</stringProp>
-              </elementProp>
-              <elementProp name="Accept" elementType="Header">
-                <stringProp name="Header.name">Accept</stringProp>
-                <stringProp name="Header.value">*/*</stringProp>
-              </elementProp>
-            </collectionProp>
-          </HeaderManager>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Dispute" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;msId&quot;:&quot;${__V(Params_${counter})}&quot;,&quot;disputedAmount&quot;:&quot;${__BeanShell(Math.abs(${__V(CPVMAsset_${counter})}+${__V(CPIMAsset_${counter})}-${__V(ClientVMAsset_${counter})}-${__V(ClientIMAsset_${counter})}))}&quot;,&quot;agreedAmount&quot;:&quot;${__BeanShell(${__V(ClientVMAsset_${counter})}+${__V(ClientIMAsset_${counter})})}&quot;,&quot;reasonCodes&quot;:[&quot;PD&quot;],&quot;comments&quot;:&quot;NET TOTAL IM GBP (${__V(Params_${counter})}); Current MTM Exposure GBP (2); Variation GBP (1); &quot;,&quot;mtm&quot;:&quot;20000&quot;,&quot;balance&quot;:&quot;20000&quot;}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.protocol">https</stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/proxy/recon/disputeStatement</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="Referer" elementType="Header">
+                  <stringProp name="Header.name">Referer</stringProp>
+                  <stringProp name="Header.value">https://uat.acuo.com/</stringProp>
+                </elementProp>
+                <elementProp name="Accept-Language" elementType="Header">
+                  <stringProp name="Header.name">Accept-Language</stringProp>
+                  <stringProp name="Header.value">en-US,en;q=0.5</stringProp>
+                </elementProp>
+                <elementProp name="origin" elementType="Header">
+                  <stringProp name="Header.name">origin</stringProp>
+                  <stringProp name="Header.value">https://uat.acuo.com</stringProp>
+                </elementProp>
+                <elementProp name="content-type" elementType="Header">
+                  <stringProp name="Header.name">content-type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+                <elementProp name="DNT" elementType="Header">
+                  <stringProp name="Header.name">DNT</stringProp>
+                  <stringProp name="Header.value">1</stringProp>
+                </elementProp>
+                <elementProp name="Accept-Encoding" elementType="Header">
+                  <stringProp name="Header.name">Accept-Encoding</stringProp>
+                  <stringProp name="Header.value">gzip, deflate, br</stringProp>
+                </elementProp>
+                <elementProp name="User-Agent" elementType="Header">
+                  <stringProp name="Header.name">User-Agent</stringProp>
+                  <stringProp name="Header.value">Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0</stringProp>
+                </elementProp>
+                <elementProp name="Accept" elementType="Header">
+                  <stringProp name="Header.name">Accept</stringProp>
+                  <stringProp name="Header.value">*/*</stringProp>
+                </elementProp>
+              </collectionProp>
+            </HeaderManager>
+            <hashTree/>
+          </hashTree>
+          <CounterConfig guiclass="CounterConfigGui" testclass="CounterConfig" testname="Counter" enabled="true">
+            <stringProp name="CounterConfig.start">1</stringProp>
+            <stringProp name="CounterConfig.end"></stringProp>
+            <stringProp name="CounterConfig.incr">1</stringProp>
+            <stringProp name="CounterConfig.name">counter</stringProp>
+            <stringProp name="CounterConfig.format"></stringProp>
+            <boolProp name="CounterConfig.per_user">false</boolProp>
+          </CounterConfig>
           <hashTree/>
         </hashTree>
         <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="true">
