@@ -1,7 +1,7 @@
 #################################################
 #File creation and modification
 #Generate UTI
-#Generate Portfolio IDs
+#Generate Portfolio IDs (removed)
 #Auto Configure Body Parameter for Jmeter
 #################################################
 
@@ -24,33 +24,16 @@ argv1=config.getint('config','threads')
 argv2=config.getint('config','rampup')
 argv3=config.getint('config','loop')
 argv4=config.getint('config','transactions')
-argv5=config.get('config','portfolioIDs')
-argv6=config.get('config','filename')
+argv5=config.get('config','filename')
 
 
 #define arguments
-Plist=argv5.split(",")
 count=0
 tcount=str(argv1)
 thread=int(argv1)
 rampup=str(argv2)
 loop=str(argv3)
 rowcount=int(argv4)
-
-#Configure BodyData for portfolioids
-PortfolioIDs_BD="{\"ids\":["
-for items in Plist:
-	PortfolioIDs_BD=PortfolioIDs_BD+'"'+items+'"'+","
-BPortfolioIDs_BD=PortfolioIDs_BD.rstrip(',')
-PortfolioIDs_BD=PortfolioIDs_BD+"]}"
-
-#write portfolio IDs
-portfolio_txt=open("portfolioids.txt","w")
-portfolio_txt.write(PortfolioIDs_BD)
-portfolio_txt.close()
-
-#portfolio ID list
-pool = cycle(Plist)
 
 #While loop for file creation
 while count<thread:
@@ -63,7 +46,7 @@ while count<thread:
     s5=f1.get_sheet_by_name('FXSwap-Bilateral')
     s6=f1.get_sheet_by_name('ZCS-Cleared')
    
-   #Loop for file modification(UTI, portfolio IDs)
+   #Loop for file modification(UTI)
     row = 1
     transaction=0
     while row<=rowcount:
@@ -75,23 +58,7 @@ while count<thread:
         #UTI cell number
         rowD='D'+str(row)
 
-        #Portfolio cell number
-        tab1='AX'+str(row)
-        tab2='AK'+str(row)
-        tab3='AY'+str(row)
-        tab4='AQ'+str(row)
-        tab5='AI'+str(row)
-        tab6='AY'+str(row)
-
         #Excel file modification
-        #Portfolio Modification
-        s1[tab1]=str(ID)
-        s2[tab2]=str(ID)
-        s3[tab3]=str(ID)
-        s4[tab4]=str(ID)
-        s5[tab5]=str(ID)
-        s6[tab6]=str(ID)
-
         #UTI Number Generation
         val1=str(count)+'1'+str(transaction)
         val2=str(count)+'2'+str(transaction)
